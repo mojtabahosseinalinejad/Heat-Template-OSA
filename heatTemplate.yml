@@ -7,6 +7,9 @@ parameters:
   key-pair-pubkey:
     type: string
     description: The optional public key
+  private-network:
+    type: string
+    description: Name of the Private Network
 
 resources:
   key-pair:
@@ -14,3 +17,8 @@ resources:
     properties:
       name: { get_param: key-pair-name }
       public_key: { get_param: key-pair-pubkey }
+
+  auth-app:
+    type: OS::Neutron::Net
+    properties:
+      name: { get_param: private-network }
