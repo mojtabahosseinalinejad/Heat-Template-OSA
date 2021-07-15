@@ -19,6 +19,9 @@ parameters:
   private-network-gateway-ip:
     type: string
     description: Gateway IP of Private Network
+  router-name:
+    type: string
+    description: Router Name
 
 resources:
   key-pair:
@@ -42,3 +45,10 @@ resources:
       dns_nameservers: 
         - 8.8.8.8
       enable_dhcp: true
+
+  router:
+    type: OS::Neutron::Router
+    properties:
+      name: { get_param: router-name }
+      external_gateway_info: 
+        network: public
