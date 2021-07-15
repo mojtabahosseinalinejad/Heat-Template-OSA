@@ -70,5 +70,5 @@ resources:
   ssh-security-group-rule:
     type: OS::Neutron::SecurityGroupRule
     properties:
-      Security_group: { get_resource: ssh-security-group }
+      security_group: { get_resource: ssh-security-group }
       protocol: 22
