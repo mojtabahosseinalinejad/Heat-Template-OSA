@@ -6,3 +6,4 @@ parameters:
   cidr-ip: 192.168.65.0/26
   private-network-gateway-ip: 192.168.65.1
   router-name: cloud-router
+  ssh-security-group-name: osa-ssh-sg
