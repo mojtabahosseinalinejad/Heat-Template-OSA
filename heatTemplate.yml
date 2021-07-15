@@ -71,4 +71,6 @@ resources:
     type: OS::Neutron::SecurityGroupRule
     properties:
       security_group: { get_resource: ssh-security-group }
-      protocol: 22
+      protocol: tcp
+      port_range_min: 22
+      port_range_max: 22
