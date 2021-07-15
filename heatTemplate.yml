@@ -66,3 +66,9 @@ resources:
     type: OS::Neutron::SecurityGroup
     properties:
       name: { get_param: ssh-security-group-name }
+
+  ssh-security-group-rule:
+    type: OS::Neutron::SecurityGroupRule
+    properties:
+      Security_group: { get_resource: ssh-security-group }
+      protocol: 22
