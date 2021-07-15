@@ -10,6 +10,15 @@ parameters:
   private-network:
     type: string
     description: Name of the Private Network
+  private-network-subnet:
+    type: string
+    description: Name of the Private Network Subnet
+  cidr-ip:
+    type: string
+    description: Private Network IP Range
+  private-network-gateway-ip:
+    type: string
+    description: Gateway IP of Private Network
 
 resources:
   key-pair:
@@ -22,3 +31,14 @@ resources:
     type: OS::Neutron::Net
     properties:
       name: { get_param: private-network }
+
+  auth-app-sub:
+    type: OS::Neutron::Subnet
+    properties:
+      network: { get_resource: auth-app }
+      name: { get_param: private-network-subnet }
+      cidr: { get_param: cidr-ip }
+      gateway_ip: { get_param: private-network-gateway-ip }
+      dns_nameservers: 
+        - 8.8.8.8
+      enable_dhcp: true
