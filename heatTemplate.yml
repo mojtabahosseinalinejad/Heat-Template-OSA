@@ -22,6 +22,9 @@ parameters:
   router-name:
     type: string
     description: Router Name
+  ssh-security-group-name:
+    type: string
+    description: Name of the SSH Security Group
 
 resources:
   key-pair:
@@ -58,3 +61,8 @@ resources:
     properties:
       router: { get_resource: router }
       subnet: { get_resource: auth-app-sub }
+
+  ssh-security-group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: { get_param: ssh-security-group-name }
