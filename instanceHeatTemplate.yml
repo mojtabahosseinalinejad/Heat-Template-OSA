@@ -1,7 +1,22 @@
 heat_template_version: 2018-08-31
 
 parameters:
+  flavor-db:
+    type: string
+    description: Flavor DataBase Instance
+  db-instance:
+    type: string
+    description: Name of the MongoDB Instance
 
 
 resources:
+  mongodb-instance:
+    type: OS::Nova::Server
+    properties:
+      image: 5172bfe0-17d3-4f83-ae42-feccb5a37fdc
+      flavor: { get_param: flavor-db }
+      name: { get_param: db-instance }
+      key_name: ssh-key
+      networks: [ { network: auth-app, fixed_ip: 192.168.65.15 } ]
+      security_groups: [default]
   
