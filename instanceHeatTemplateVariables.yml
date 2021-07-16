@@ -1,2 +1,4 @@
 parameters:
+  flavor-db: database.node
+  db-instance: MongoDB-Instance
   
