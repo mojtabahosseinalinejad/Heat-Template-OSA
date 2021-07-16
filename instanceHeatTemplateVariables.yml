@@ -1,4 +1,5 @@
 parameters:
   flavor-db: database.node
   db-instance: MongoDB-Instance
-  
+  flavor-app: app.node
+  app-instance: osa-apps-%index%
