@@ -7,6 +7,12 @@ parameters:
   db-instance:
     type: string
     description: Name of the MongoDB Instance
+  flavor-app:
+    type: string
+    description: Flavor App Instance
+  app-instance:
+    type: string
+    description: Name of the App Instance - This Instances include Authentiq, Systen Information and Nginx
 
 
 resources:
@@ -19,4 +25,18 @@ resources:
       key_name: ssh-key
       networks: [ { network: auth-app, fixed_ip: 192.168.65.15 } ]
       security_groups: [default]
+
+  osa-apps-group:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: 3
+      resource_def:
+        type: OS::Nova::Server
+        properties:
+          image: 1bd461fa-8ecf-47c9-8325-693d1f2ddb02
+          flavor: { get_param: flavor-app }
+          name: { get_param: app-instance }
+          key_name: ssh-key
+          networks: [ { network: auth-app } ]
+          security_groups: [default]
   
