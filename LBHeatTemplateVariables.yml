@@ -11,3 +11,4 @@ parameters:
   pool-member-2-protocol: 80
   pool-member-3-ip: 192.168.65.38
   pool-member-3-protocol: 80
+  health-monitor-type: PING
