@@ -37,6 +37,9 @@ parameters:
   pool-member-3-protocol:
     type: string
     description: Port on which the pool member listens for requests or connections
+  health-monitor-type:
+    type: string
+    description: One of predefined health monitor types.
 
 
 resources:
@@ -81,3 +84,12 @@ resources:
       address: { get_param: pool-member-3-ip }
       pool: { get_resource: LoadBalancerPool }
       protocol_port: { pool-member-3-protocol }
+
+  HealthMonitor:
+    type: OS::Octavia::HealthMonitor
+    properties:
+      delay: 5
+      max_retries: 3
+      pool: { get_resource: LoadBalancerPool }
+      timeout: 5
+      type: { get_param: health-monitor-type }    
