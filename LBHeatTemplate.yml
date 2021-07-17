@@ -7,7 +7,12 @@ parameters:
   loadbalancer-subnet:
     type: string
     description: The name or ID of the subnet on which to allocate the VIP address
-  
+  loadbalancerlistener-protocol:
+    type: string
+    description: Protocol on which to listen for the client traffic
+  loadbalancerlistener-protocol-port:
+    type: string
+    description: Protocol Port
 
 resources:
   LoadBalancer:
@@ -15,3 +20,10 @@ resources:
     properties:
       name: { get_param: loadbalancer-name }
       vip_subnet: { get_param: loadbalancer-subnet }
+
+  LoadBalancerListener:
+    type: OS::Octavia::Listener
+    properties:
+      protocol: { get_param: loadbalancerlistener-protocol }
+      protocol_port: { get_param: loadbalancerlistener-protocol-port }
+      loadbalancer: { get_resource: LoadBalancer }
