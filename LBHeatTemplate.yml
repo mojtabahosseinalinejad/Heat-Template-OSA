@@ -19,6 +19,25 @@ parameters:
   lb-pool-protocol:
     type: string
     description: Protocol of the pool
+  pool-member-1-ip:
+    type: string
+    description: IP address of the pool member on the pool network
+  pool-member-1-protocol:
+    type: string
+    description: Port on which the pool member listens for requests or connections
+  pool-member-2-ip:
+    type: string
+    description: IP address of the pool member on the pool network
+  pool-member-2-protocol:
+    type: string
+    description: Port on which the pool member listens for requests or connections
+  pool-member-3-ip:
+    type: string
+    description: IP address of the pool member on the pool network
+  pool-member-3-protocol:
+    type: string
+    description: Port on which the pool member listens for requests or connections
+
 
 resources:
   LoadBalancer:
@@ -41,3 +60,24 @@ resources:
       protocol: { get_param: lb-pool-protocol }
       loadbalancer: { get_resource: LoadBalancer }
       listener: { get_resource: LoadBalancerListener }
+
+  LoadBalancerPoolMember1:
+    type: OS::Octavia::PoolMember
+    properties:
+      address: { get_param: pool-member-1-ip }
+      pool: { get_resource: LoadBalancerPool }
+      protocol_port: { pool-member-1-protocol }
+
+  LoadBalancerPoolMember2:
+    type: OS::Octavia::PoolMember
+    properties:
+      address: { get_param: pool-member-2-ip }
+      pool: { get_resource: LoadBalancerPool }
+      protocol_port: { pool-member-2-protocol }
+
+  LoadBalancerPoolMember3:
+    type: OS::Octavia::PoolMember
+    properties:
+      address: { get_param: pool-member-3-ip }
+      pool: { get_resource: LoadBalancerPool }
+      protocol_port: { pool-member-3-protocol }
