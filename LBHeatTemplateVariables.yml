@@ -1,6 +1,5 @@
 parameters:
   loadbalancer-name: OSA-LB
   loadbalancer-subnet: auth-app-sub
-  
-
-  
+  loadbalancerlistener-protocol: HTTP
+  loadbalancerlistener-protocol-port: 80
