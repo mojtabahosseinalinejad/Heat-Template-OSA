@@ -69,21 +69,21 @@ resources:
     properties:
       address: { get_param: pool-member-1-ip }
       pool: { get_resource: LoadBalancerPool }
-      protocol_port: { pool-member-1-protocol }
+      protocol_port: { get_param: pool-member-1-protocol }
 
   LoadBalancerPoolMember2:
     type: OS::Octavia::PoolMember
     properties:
       address: { get_param: pool-member-2-ip }
       pool: { get_resource: LoadBalancerPool }
-      protocol_port: { pool-member-2-protocol }
+      protocol_port: { get_param: pool-member-2-protocol }
 
   LoadBalancerPoolMember3:
     type: OS::Octavia::PoolMember
     properties:
       address: { get_param: pool-member-3-ip }
       pool: { get_resource: LoadBalancerPool }
-      protocol_port: { pool-member-3-protocol }
+      protocol_port: { get_param: pool-member-3-protocol }
 
   HealthMonitor:
     type: OS::Octavia::HealthMonitor
