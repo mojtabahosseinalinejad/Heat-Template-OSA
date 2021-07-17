@@ -1,6 +1,17 @@
 heat_template_version: 2018-08-31
 
 parameters:
+  loadbalancer-name:
+    type: string
+    description: Name of this Load Balancer
+  loadbalancer-subnet:
+    type: string
+    description: The name or ID of the subnet on which to allocate the VIP address
   
 
 resources:
+  LoadBalancer:
+    type: OS::Octavia::LoadBalancer
+    properties:
+      name: { get_param: loadbalancer-name }
+      vip_subnet: { get_param: loadbalancer-subnet }
