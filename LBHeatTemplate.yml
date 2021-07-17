@@ -13,6 +13,12 @@ parameters:
   loadbalancerlistener-protocol-port:
     type: string
     description: Protocol Port
+  lb-algorithm: 
+    type: string
+    description: The algorithm used to distribute load between the members of the pool
+  lb-pool-protocol:
+    type: string
+    description: Protocol of the pool
 
 resources:
   LoadBalancer:
@@ -27,3 +33,11 @@ resources:
       protocol: { get_param: loadbalancerlistener-protocol }
       protocol_port: { get_param: loadbalancerlistener-protocol-port }
       loadbalancer: { get_resource: LoadBalancer }
+
+  LoadBalancerPool:
+    type: OS::Octavia::Pool
+    properties:
+      lb_algorithm: { get_param: lb-algorithm }
+      protocol: { get_param: lb-pool-protocol }
+      loadbalancer: { get_resource: LoadBalancer }
+      listener: { get_resource: LoadBalancerListener }
