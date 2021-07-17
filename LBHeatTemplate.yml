@@ -1,0 +1,6 @@
+heat_template_version: 2018-08-31
+
+parameters:
+  
+
+resources:
