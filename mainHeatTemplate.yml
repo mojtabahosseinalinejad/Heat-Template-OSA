@@ -1,0 +1,256 @@
+heat_template_version: 2018-08-31
+
+parameters:
+  key-pair-name:
+    type: string
+    description: The name of the key pair.
+  key-pair-pubkey:
+    type: string
+    description: The optional public key
+  private-network:
+    type: string
+    description: Name of the Private Network
+  private-network-subnet:
+    type: string
+    description: Name of the Private Network Subnet
+  cidr-ip:
+    type: string
+    description: Private Network IP Range
+  private-network-gateway-ip:
+    type: string
+    description: Gateway IP of Private Network
+  router-name:
+    type: string
+    description: Router Name
+  ssh-security-group-name:
+    type: string
+    description: Name of the SSH Security Group
+  http-security-group-name:
+    type: string
+    description: Name of the HTTP Security Group
+  flavor-db:
+    type: string
+    description: Flavor DataBase Instance
+  db-instance:
+    type: string
+    description: Name of the MongoDB Instance
+  flavor-app:
+    type: string
+    description: Flavor App Instance
+  app-instance-1:
+    type: string
+    description: Name of the App Instance - This Instances include Authentiq, Systen Information and Nginx
+  app-instance-2:
+    type: string
+    description: Name of the App Instance - This Instances include Authentiq, Systen Information and Nginx
+  app-instance-3:
+    type: string
+    description: Name of the App Instance - This Instances include Authentiq, Systen Information and Nginx
+  loadbalancer-name:
+    type: string
+    description: Name of this Load Balancer
+  loadbalancerlistener-protocol:
+    type: string
+    description: Protocol on which to listen for the client traffic
+  loadbalancerlistener-protocol-port:
+    type: string
+    description: Protocol Port
+  lb-algorithm: 
+    type: string
+    description: The algorithm used to distribute load between the members of the pool
+  lb-pool-protocol:
+    type: string
+    description: Protocol of the pool
+  pool-member-1-protocol:
+    type: string
+    description: Port on which the pool member listens for requests or connections
+  pool-member-2-protocol:
+    type: string
+    description: Port on which the pool member listens for requests or connections
+  pool-member-3-protocol:
+    type: string
+    description: Port on which the pool member listens for requests or connections
+  health-monitor-type:
+    type: string
+    description: One of predefined health monitor types.
+  HM-expected-codes:
+    type: string
+    description: HTTP Status Code.
+  http-method:
+    type: string
+    description: The HTTP method used for requests by the monitor of type HTTP
+  HM-api:
+    type: string
+    description: The HTTP path used in the HTTP request used by the monitor to test a member health
+  
+
+resources:
+  key-pair:
+    type: OS::Nova::KeyPair
+    properties:
+      name: { get_param: key-pair-name }
+      public_key: { get_param: key-pair-pubkey }
+
+  auth-app:
+    type: OS::Neutron::Net
+    properties:
+      name: { get_param: private-network }
+
+  auth-app-sub:
+    type: OS::Neutron::Subnet
+    properties:
+      network: { get_resource: auth-app }
+      name: { get_param: private-network-subnet }
+      cidr: { get_param: cidr-ip }
+      gateway_ip: { get_param: private-network-gateway-ip }
+      dns_nameservers: 
+        - 8.8.8.8
+      enable_dhcp: true
+
+  router:
+    type: OS::Neutron::Router
+    properties:
+      name: { get_param: router-name }
+      external_gateway_info: 
+        network: public
+
+  router-interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: router }
+      subnet: { get_resource: auth-app-sub }
+
+  ssh-security-group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: { get_param: ssh-security-group-name }
+
+  ssh-security-group-rule:
+    type: OS::Neutron::SecurityGroupRule
+    properties:
+      security_group: { get_resource: ssh-security-group }
+      protocol: tcp
+      port_range_min: 22
+      port_range_max: 22
+
+  http-security-group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: { get_param: http-security-group-name }
+
+  http-security-group-rule:
+    type: OS::Neutron::SecurityGroupRule
+    properties:
+      security_group: { get_resource: http-security-group }
+      protocol: tcp
+      port_range_min: 80
+      port_range_max: 80
+
+  mongodb-instance:
+    type: OS::Nova::Server
+    properties:
+      image: 5172bfe0-17d3-4f83-ae42-feccb5a37fdc
+      flavor: { get_param: flavor-db }
+      name: { get_param: db-instance }
+      key_name: { get_resource: key-pair }
+      networks: [ { network: { get_resource: auth-app }, fixed_ip: 192.168.65.15 } ]
+      security_groups: [default]
+
+  osa-apps-1:
+    type: OS::Nova::Server
+    properties:
+      image: 1bd461fa-8ecf-47c9-8325-693d1f2ddb02
+      flavor: { get_param: flavor-app }
+      name: { get_param: app-instance-1 }
+      key_name: { get_resource: key-pair }
+      networks: [ network: { get_resource: auth-app } ]
+      security_groups: [default, get_resource: http-security-group]
+
+  LoadBalancerPoolMember1:
+    type: OS::Octavia::PoolMember
+    properties:
+      address: { get_attr: [ osa-apps-1, first_address ] }
+      subnet: { get_resource: auth-app-sub }
+      pool: { get_resource: LoadBalancerPool }
+      protocol_port: { get_param: pool-member-1-protocol }
+
+  osa-apps-2:
+    type: OS::Nova::Server
+    properties:
+      image: 1bd461fa-8ecf-47c9-8325-693d1f2ddb02
+      flavor: { get_param: flavor-app }
+      name: { get_param: app-instance-2 }
+      key_name: { get_resource: key-pair }
+      networks: [ network: { get_resource: auth-app } ]
+      security_groups: [default, get_resource: http-security-group]
+
+  LoadBalancerPoolMember2:
+    type: OS::Octavia::PoolMember
+    properties:
+      address: { get_attr: [ osa-apps-2, first_address ] }
+      subnet: { get_resource: auth-app-sub }
+      pool: { get_resource: LoadBalancerPool }
+      protocol_port: { get_param: pool-member-2-protocol }
+
+  osa-apps-3:
+    type: OS::Nova::Server
+    properties:
+      image: 1bd461fa-8ecf-47c9-8325-693d1f2ddb02
+      flavor: { get_param: flavor-app }
+      name: { get_param: app-instance-3 }
+      key_name: { get_resource: key-pair }
+      networks: [ network: { get_resource: auth-app } ]
+      security_groups: [default, get_resource: http-security-group]
+
+  LoadBalancerPoolMember3:
+    type: OS::Octavia::PoolMember
+    properties:
+      address: { get_attr: [ osa-apps-3, first_address ] }
+      subnet: { get_resource: auth-app-sub }
+      pool: { get_resource: LoadBalancerPool }
+      protocol_port: { get_param: pool-member-3-protocol }
+  
+  LoadBalancer:
+    type: OS::Octavia::LoadBalancer
+    properties:
+      name: { get_param: loadbalancer-name }
+      vip_subnet: { get_resource: auth-app-sub }
+      vip_address: 192.168.65.21
+
+  LoadBalancerListener:
+    type: OS::Octavia::Listener
+    properties:
+      protocol: { get_param: loadbalancerlistener-protocol }
+      protocol_port: { get_param: loadbalancerlistener-protocol-port }
+      loadbalancer: { get_resource: LoadBalancer }
+
+  LoadBalancerPool:
+    type: OS::Octavia::Pool
+    properties:
+      lb_algorithm: { get_param: lb-algorithm }
+      protocol: { get_param: lb-pool-protocol }
+      loadbalancer: { get_resource: LoadBalancer }
+      listener: { get_resource: LoadBalancerListener }
+
+  HealthMonitor:
+    type: OS::Octavia::HealthMonitor
+    properties:
+      delay: 5
+      max_retries: 3
+      pool: { get_resource: LoadBalancerPool }
+      timeout: 5
+      type: { get_param: health-monitor-type } 
+      expected_codes: { get_param: HM-expected-codes }
+      http_method: { get_param: http-method }
+      url_path: { get_param: HM-api }
+
+  floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      floating_network: public
+
+  floating_ip_association:
+    type: OS::Neutron::FloatingIPAssociation
+    properties:
+      floatingip_id: { get_resource: floating_ip }
+      port_id: { get_attr: [LoadBalancer, vip_port_id ]}

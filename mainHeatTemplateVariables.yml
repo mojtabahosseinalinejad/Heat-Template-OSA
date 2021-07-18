@@ -1,0 +1,28 @@
+parameters:
+  key-pair-name: ssh-key
+  key-pair-pubkey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCnkp9W1I36Nu6Z4Y17Z9/QQdIq2UMLAa290gfnGW88YgLkF4gLAnkAUeW5KCPjCkqQJrhMJkSxYI1foHTLmjrhT7Xsp/GaHFy04GrSifJ6gQ0F95GQK37b8RCakO4NFmCAq8dHlfmxwISjZYwFaA7l0dBDwFfGBDk02dS5+sDjfJ1DTbxvntaYeIpju7XL2tIebEoD5cXTsp8FyXtNaWi1yx206fVKisOpNjbSI0elCs7BgCjePqu3lriFSKUPHj2vfulx3yTKnEuK1XunitQroOtgjy13sRFoqTwHY2aqKPs7/oBBkrbKfYbxgRYSvAhhAdZjzIE17dvwvJJaEEa97RUQ3MUqxfFiPdgEdflFDsjxbq91GMdyW7qUnP6kdITXoA2KqVp3cLov7czX6SP5uWtD2tjj2mgTg0FnffyFWZ3eAp3hn8kiI8kRRYfC6kSLvKpZPpXkmmxXCgGbSkZgL5NswX2W57jHiKpCIoaARbL8S66sLOVoiNSI86RytZ8= root@aio1
+  private-network: auth-app
+  private-network-subnet: auth-app-sub
+  cidr-ip: 192.168.65.0/26
+  private-network-gateway-ip: 192.168.65.1
+  router-name: cloud-router
+  ssh-security-group-name: osa-ssh-sg
+  http-security-group-name: osa-http-sg
+  flavor-db: database.node
+  db-instance: MongoDB-Instance
+  flavor-app: app.node
+  app-instance-1: osa-apps-1
+  app-instance-2: osa-apps-2
+  app-instance-3: osa-apps-3
+  loadbalancer-name: OSA-LB
+  loadbalancerlistener-protocol: HTTP
+  loadbalancerlistener-protocol-port: 80
+  lb-algorithm: ROUND_ROBIN
+  lb-pool-protocol: HTTP
+  pool-member-1-protocol: 80
+  pool-member-2-protocol: 80
+  pool-member-3-protocol: 80
+  health-monitor-type: HTTP
+  HM-expected-codes: 200
+  http-method: GET
+  HM-api: /authentiq/v1/heartbeat
